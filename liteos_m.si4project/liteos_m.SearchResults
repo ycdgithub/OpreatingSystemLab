@@ -1,0 +1,31 @@
+---- memset Matches (30 in 19 files) ----
+__fdopen in __fdopen.c (kal\posix\musl_src\stdio) : 	memset(f, 0, sizeof *f);
+ICMP6_FILTER_SETPASSALL in icmp6.h (kal\posix\include\netinet) : 	memset (filterp, 0, sizeof (struct icmp6_filter));
+ICMP6_FILTER_SETBLOCKALL in icmp6.h (kal\posix\include\netinet) : 	memset (filterp, 0xFF, sizeof (struct icmp6_filter));
+ramfs_mkdir in los_ramfs.c (components\fs\ramfs) :     memset(ramfs_dir, 0, sizeof(struct ramfs_element));
+ramfs_mount in los_ramfs.c (components\fs\ramfs) :     memset(rmp, 0, sizeof(struct ramfs_mount_point));
+los_fs_mount in los_vfs.c (components\fs\vfs) :     memset(mp, 0, sizeof(struct mount_point));
+SecMemcpyError in memcpy_s.c (third_party\bounds_checking_function\src) :             (void)memset(dest, 0, destMax);
+SecMemcpyError in memcpy_s.c (third_party\bounds_checking_function\src) :         (void)memset(dest, 0, destMax);
+SecMemcpyError in memcpy_s.c (third_party\bounds_checking_function\src) :         (void)memset(dest, 0, destMax);
+memmove_s in memmove_s.c (third_party\bounds_checking_function\src) :             (void)memset(dest, 0, destMax);
+memmove_s in memmove_s.c (third_party\bounds_checking_function\src) :         (void)memset(dest, 0, destMax);
+memory_func_test.c (testsuits\unittest\posix\src\string) line 150 :  * @tc.name      : Memony operation for memset test
+LITE_TEST_CASE in memory_func_test.c (testsuits\unittest\posix\src\string) :     retValue = memset(source, ch, sizeof(source) / sizeof(source[0]));
+LITE_TEST_CASE in memory_func_test.c (testsuits\unittest\posix\src\string) :         memset(mem, testChar, mlen);
+memset.c (kal\posix\musl_src\string) line 4 : void *memset(void *dest, int c, size_t n)
+SecMemsetError in memset_s.c (third_party\bounds_checking_function\src) :         (void)memset(dest, c, destMax); /* Set entire buffer to value c */
+regcomp in regcomp.c (kal\posix\musl_src\regex) :   memset(&parse_ctx, 0, sizeof(parse_ctx));
+regcomp in regcomp.c (kal\posix\musl_src\regex) : 	  memset(tag_directions, -1,
+tre_tnfa_run_parallel in regexec.c (kal\posix\musl_src\regex) :   memset(&mbstate, '\0', sizeof(mbstate));
+tre_tnfa_run_backtrack in regexec.c (kal\posix\musl_src\regex) :   memset(&mbstate, '\0', sizeof(mbstate));
+sched.h (kal\posix\include) line 69 : void *memset (void *, int, size_t);
+sched.h (kal\posix\include) line 105 : #define CPU_ZERO_S(size,set) memset(set,0,size)
+SECUREC_MEMSET_SM in securectype.h (third_party\bounds_checking_function\include) :         (memset((dest), (c), (count)), EOK) : \
+securecutil.h (third_party\bounds_checking_function\src) line 231 : #define SECUREC_MEMSET_FUNC_OPT  memset
+strcspn in strcspn.c (kal\posix\musl_src\string) : 	memset(byteset, 0, sizeof byteset);
+string.h (kal\posix\include) line 31 : void *memset (void *, int, size_t);
+tre_mem_new_impl in tre-mem.c (kal\posix\musl_src\regex) :       memset(mem, 0, sizeof(*mem));
+tre_mem_alloc_impl in tre-mem.c (kal\posix\musl_src\regex) :     memset(ptr, 0, size);
+wmemcpy_s in wmemcpy_s.c (third_party\bounds_checking_function\src) :             (void)memset(dest, 0, destMax * sizeof(wchar_t));
+wmemmove_s in wmemmove_s.c (third_party\bounds_checking_function\src) :             (void)memset(dest, 0, destMax * sizeof(wchar_t));
