@@ -22,3 +22,5 @@ Linux基本命令的使用。可参考《Linux教程》：
 进入[微软Visual Studio](https://visualstudio.microsoft.com/zh-hans/) 或[VSCode官网](https://code.visualstudio.com/)，下载Visual Studio Code安装包，双击安装包即可安装。
 
 - #### 安装汉语支持扩展插件。
+单击扩展（Extensions）按钮，搜索Chinese，安装后重启Visual Studio Code。如 ![图1.1](lab/pictures/fig1_1.png "汉语插件")所示。
+
