@@ -238,6 +238,7 @@ make all
 
 - #### gdb中调试内核
 在另外一个WSL窗口启动Ubuntu，在构建内核的目录（例如：/mnt/e/nuclei/liteos_m/targets/riscv_nuclei_gd32vf103_soc_gcc/GCC）输入：
+
 ```
 riscv-nuclei-elf-gdb build/Nuclei-rvstar-gd32vf103-soc.elf
 ```
@@ -255,13 +256,14 @@ sudo apt-get install libncursesw5
 ```
 
 在gdb中依次输入：
-```target remote localhost:1234
+```
+target remote localhost:1234
 b main
 c
-list```
-
+list
+```
 可用看到内核已经关联到源码。结果如图2.8所示。
-
-图2.8  调试内核
+![图2.8](/lab/pictures/fig2_8.png)
+**图2.8  调试内核**
 ## 六、实验练习与思考题
 1.在gdb中查看main()代码，结果如何？
