@@ -4,34 +4,35 @@
 
 ## 一、实验目的
 
-1.理解操作系统的调度管理机制；
-2.熟悉OpenHarmony的任务调度框架；
-3.实现RR调度算法来替换缺省的调度算法。
+1. 理解操作系统的调度管理机制；
+2. 熟悉OpenHarmony的任务调度框架；
+3. 实现RR调度算法来替换缺省的调度算法。
 
 ## 二、实验环境
 
-1.安装OpenHarmony开发环境的PC一台。
+1. 安装OpenHarmony开发环境的PC一台。
 
 ## 三、实验内容
 
-1.分析OpenHarmony的任务管理机制；
-2.分析OpenHarmony的任务调度算法；
-3.实现RR调度算法来替换缺省的调度算法。
+1. 分析OpenHarmony的任务管理机制；
+2. 分析OpenHarmony的任务调度算法；
+3. 实现RR调度算法来替换缺省的调度算法。
 
 ## 四、实验原理
 
-### 1.任务调度
+### 1. 任务调度
 
 任何操作系统都可能碰到进程数多于处理器数的情况，这样就需要考虑如何分享处理器资源。理想的做法是让分享机制对进程透明。这就要求进程调度程序按一定的策略，动态地把处理机分配给处于就绪队列中的某一个进程，以使之执行。调度策略必须满足几个相互冲突的目标:快速的进程响应时间、良好的后台作业吞吐量、避免进程饥饿、协调低优先级和高优先级进程的需求等等。
 
-### 2.任务就绪队列
+### 2. 任务就绪队列
 
 在任务调度模块，就绪队列是个重要的数据结构。任务创建后即进入就绪态，并放入就绪队列。在鸿蒙轻内核中，就绪队列是一个双向循环链表数组，每个数组元素就是一个链表，相同优先级的任务放入同一个链表。
 任务就绪队列Priority Queue主要供内部使用，双向循环链表数组能够更加方便的支持任务基于优先级进行调度。任务就绪队列的核心代码在kernel\src\los_sched.c文件中。
 
-### 3.OpenHarmony任务调度
+### 3. OpenHarmony任务调度
 
-1)LOS_Start()函数
+#### 3.1 LOS_Start()函数
+
 OpenHarmony中LOS_Start()函数启动任务调度。LOS_Start()函数如代码引用4.1所示。
 代码引用4.1  LOS_Start()函数（los_init.c）
 
@@ -43,7 +44,9 @@ LITE_OS_SEC_TEXT_INIT UINT32 LOS_Start(VOID)
 ```
 
 LOS_Start()函数调用 HalStartSchedule()函数来完成启动任务调度。
-2)HalStartSchedule()函数
+
+#### 3.2 HalStartSchedule()函数
+
 HalStartSchedule()函数如代码引用4.2所示。
 代码引用 4.2  HalStartSchedule()函数（los_context.c）
 
@@ -57,7 +60,8 @@ LITE_OS_SEC_TEXT_INIT UINT32 HalStartSchedule(VOID)
 }
 ```
 
-3)LOS_IntLock()函数
+#### 3.3 LOS_IntLock()函数
+
 HalStartSchedule()函数首先调用LOS_IntLock()函数关中断，LOS_IntLock()在los_interrupt.h中被定义为HalIntLock()函数，HalIntLock()函数是文件kernel\arch\risc-v\risc32\gcc\los_dispatch.S中的汇编函数。如代码引用4.3所示。
 代码引用 4.3  HalIntLock()函数（los_dispatch.S）
 
@@ -69,7 +73,8 @@ HalIntLock:
     ret
 ```
 
-4)OsSchedStart()函数
+#### 3.4 OsSchedStart()函数
+
 HalStartSchedule()函数然后调用OsSchedStart()函数开始任务调度，该函数的实现如代码引用4.4所示。
 代码引用 4.4  OsSchedStart()函数（los_sched.c）
 
@@ -94,7 +99,9 @@ VOID OsSchedStart(VOID)
 ```
 
 OsSchedStart()函数调用OsGetTopTask()从就绪队列选择要运行的任务。
-5)OsGetTopTask()函数
+
+#### 3.5 OsGetTopTask()函数
+
 OsGetTopTask()函数实现如代码引用4.5所示。
 代码引用4.5  函数OsGetTopTask()（los_sched.c）
 
@@ -113,7 +120,8 @@ LosTaskCB *OsGetTopTask(VOID)
 }
 ```
 
-6)HalStartToRun()函数
+#### 3.6 HalStartToRun()函数
+
 HalStartSchedule()函数最后调用HalStartToRun()函数启动任务执行，该函数函数也是文件kernel\arch\risc-v\risc32\gcc\los_dispatch.S中的汇编函数，如代码引用4.6所示。
 代码引用 4.6  HalStartToRun()函数（los_dispatch.S）
 
@@ -135,21 +143,22 @@ HalStartToRun:
     mret
 ```
 
-### 4.RR调度算法
+### 4. RR调度算法
 
 在循环（Round-Robin，RR）调度算法中，操作系统定义了一个时间量(片)。所有进程都将以循环方式执行。每个进程将获得CPU一小段时间，然后回到就绪队列等待下一轮。
 
 ## 五、实验练习与思考题
 
-### 1.API编程
+### 1. API编程
 
 根据实验原理，创建2个不同优先级任务的。高优先级的任务延时20个Tick，时间到了之后输出提示信息，然后该任务挂起自身，继续执行之后输出提示信息。低优先级任务延时20个Tick，时间到了之后输出提示信息，然后该任务挂起，执行剩余任务中的高优先级的任务。
 
-### 2.源码分析
+### 2. 源码分析
 
 分析LiteOS-m内核任务调度的全局变量、算法，源码主要涉及los_sched.h、los_sched.c和los_dispatch.S。
 
-- 静态变量与全局变量
+#### 2.1 静态变量与全局变量
+
 在表中描述以下变量的意义并列出主要相关函数。
 调度模块的主要静态变量与全局变量如代码引用4.7所示。
 代码引用 4.7  调度模块的主要静态变量与全局变量（los_sched.c）
@@ -181,7 +190,8 @@ UINT64 g_sysSchedStartTime = OS_64BIT_MAX;
 |9| SchedRealSleepTimeSet ||
 |10| g_sysSchedStartTime  ||
 
-- 优先级队列链表与队列位图。
+#### 2.2 优先级队列链表与队列位图
+
 分析链表g_priQueueList和位图g_queueBitmap两个变量的作用意义。
 链表g_priQueueList和位图g_queueBitmap的定义如代码引用4.8所示。
 代码引用4.8  链表g_priQueueList和位图g_queueBitmap的定义（los_sched.c）
@@ -212,7 +222,8 @@ STATIC UINT32 g_queueBitmap;
 |*14|LOS_SchedTickHandler||
 |15|LOS_Schedule||
 
-- 函数OsSchedTaskDeQueue()。
+#### 2.3 函数OsSchedTaskDeQueue()
+
 函数OsSchedTaskDeQueue()的实现如代码引用4.9所示。
 代码引用 4.9  函数OsSchedTaskDeQueue()的实现（los_sched.c）
 
@@ -230,7 +241,8 @@ VOID OsSchedTaskDeQueue(LosTaskCB *taskCB)
 }
 ```
 
-- 函数OsSchedTaskEnQueue()。
+#### 2.4 函数OsSchedTaskEnQueue()
+
 函数OsSchedTaskEnQueue()的实现如代码引用4.9所示。
 代码引用 4.9  函数OsSchedTaskDeQueue()的实现（los_sched.c）
 
@@ -257,7 +269,8 @@ VOID OsSchedTaskEnQueue(LosTaskCB *taskCB)
 }
 ```
 
-- 函数OsSchedTaskWait()。
+#### 2.5 函数OsSchedTaskWait()
+
 函数OsSchedTaskEnQueue()的实现如代码引用4.10所示。
 代码引用 4.10  函数OsSchedTaskWait()的实现（los_sched.c）
 
@@ -274,7 +287,8 @@ VOID OsSchedTaskWait(LOS_DL_LIST *list, UINT32 ticks)
 }
 ```
 
-- 函数OsSchedTaskWake()。
+#### 2.6 函数OsSchedTaskWake()
+
 函数OsSchedTaskEnQueue()的实现如代码引用4.11所示。
 代码引用 4.11  函数OsSchedTaskEnQueue()的实现（los_sched.c）
 
@@ -296,7 +310,7 @@ VOID OsSchedTaskWake(LosTaskCB *resumedTask)
 }
 ```
 
-- 函数OsSchedTaskExit()
+#### 2.7 函数OsSchedTaskExit()
 
 函数OsSchedTaskExit()的实现如代码引用4.11所示。
 代码引用 4.11  函数OsSchedTaskExit()的实现（los_sched.c）
@@ -319,7 +333,8 @@ VOID OsSchedTaskExit(LosTaskCB *taskCB)
 }
 ```
 
-(6)函数OsSchedInit()
+#### 2.8 函数OsSchedInit()
+
 函数OsSchedInit()的实现如代码引用4.12所示。
 代码引用 4.12  函数OsSchedInit()的实现（los_sched.c）
 
@@ -346,7 +361,8 @@ UINT16 pri;
 }
 ```
 
-(7)函数OsSchedStart()
+#### 2.9 函数OsSchedStart()
+
 函数OsSchedStart()的实现如代码引用4.13所示。
 代码引用 4.13  函数OsSchedStart()的实现（los_sched.c）
 
@@ -375,7 +391,8 @@ VOID OsSchedStart(VOID)
 }
 ```
 
-(8)函数OsSchedTaskSwitch()
+#### 2.10 函数OsSchedTaskSwitch()
+
 函数OsSchedTaskSwitch()的实现如代码引用4.14所示。
 代码引用 4.14  函数OsSchedTaskSwitch()的实现（los_sched.c）
 
@@ -427,7 +444,8 @@ BOOL OsSchedTaskSwitch(VOID)
 }
 ```
 
-(9)函数OsGetTopTask()
+#### 2.11 函数OsGetTopTask()
+
 函数OsGetTopTask()的实现如代码引用4.14所示。
 代码引用 4.14  函数OsGetTopTask()的实现（los_sched.c）
 

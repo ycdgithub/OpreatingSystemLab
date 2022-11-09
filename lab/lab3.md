@@ -20,7 +20,7 @@
 
 ## 四、实验原理
 
-### 1.OpenHarmony任务
+### 1. OpenHarmony任务
 
 每一个任务都含有一个任务控制块（TCB）。TCB包含了任务上下文栈指针（stack pointer）、任务状态、任务优先级、任务ID、任务名、任务栈大小等信息。TCB可以反映出每个任务运行情况。任务初始化时需要通过结构体TSK_INIT_PARAM_S提供一些任务所需的信息。其中，成员pfnTaskEntry是任务入口函数，这样在任务第一次启动进入运行态时，将会执行任务入口函数。因此本实验中可定义一个函数HelloWorldEntry执行输出"Hello World！"并把该函数作为任务的入口函数。任务入口函数如代码示例3.1所示。
 代码示例3.1  任务入口函数HelloWorldEntry()
@@ -37,7 +37,7 @@ VOID HelloWorldEntry(VOID)
 
 任务是抢占式调度机制，同时支持时间片轮转调度方式。LiteOS-m内核的任务一共有32个优先级(0-31)，最高优先级为0，最低优先级为31。
 
-### 2.OpenHarmony任务定义创建
+### 2. OpenHarmony任务定义创建
 
 首先定义TSK_INIT_PARAM_S类型的结构体stTask来完成任务的初始化，设置任务入口函数、堆栈大小、任务名称以及优先级。然后调用函数LOS_TaskCreate()创建任务，其原型如下：
 
@@ -67,7 +67,7 @@ VOID TaskHelloWorld(VOID)
 }
 ```
 
-### 3.OpenHarmony任务运行
+### 3. OpenHarmony任务运行
 
 任务创建完成后，需要将任务TaskHelloWorld放到用户代码的main()函数中，然后调用LOS_Start()启动任务的调度，但是在此之前需要先调用 LOS_KernelInit()初始化用户代码的内核空间。main()函数如代码示例3.3。
 代码示例3.3  main()函数中运行任务
@@ -93,11 +93,11 @@ int main(void)
 
 # 五、实验练习与思考题
 
-### 1.API编程
+### 1. API编程
 
 根据实验原理，创建一个任务，完成完整的HelloWorld程序，输出"Hello World!"。
 
-### 2.源码分析
+### 2. 源码分析
 
 分析OpenHarmony的LiteOS-m内核的TCB数据结构、任务状态、全局变量及其导致状态转换的函数的源码，源码主要涉及los_task.h和los_task.c。
 LiteOS-m的任务状态定义如代码引用3.3所示。

@@ -16,33 +16,33 @@
 
 ## 四、相关知识
 
-### 1.Qemu RISC-V
+### 1. Qemu RISC-V
 
-- #### Qemu
+#### 1.1 Qemu
 
 Qemu是一个虚拟机，或者说是模拟器，类似VMware。主要对单片机或者嵌入式常用的一些处理器模拟，嵌入式开发中使用广泛，比如arm，sparc，riscv等架构处理器。
 
-- #### RISC-V
+#### 1.2 RISC-V
 
 RISC-V（发音为“risk-five”）是一个基于精简指令集（RISC）的开源架构（ISA）。华为的HI3861、阿里的平头哥和芯来科技（Nuclei）的蜂鸟处理器等均基于RISC-V。
 
-- #### Qemu仿真RISC-V
+#### 1.3 Qemu仿真RISC-V
 
 Qemu RISC-V是模拟RISC-V环境的Qemu模拟器。
 
-### 2.OpenHarmony操作系统
+### 2. OpenHarmony操作系统
 
 OpenHarmony操作系统是鸿蒙OS分布式操作系统简介 鸿蒙系统（Harmony OS）的开源版本。
 
 本课程实验基于该源码的内核，以RISC-V为系统架构，在Visual Studio Code中查看和修改内核源码，在Qemu上运行系统内核。
 
-### 3.OpenHarmony LiteOS-M内核
+### 3. OpenHarmony LiteOS-M内核
 
-- #### LiteOS-M内核
+#### 3.1 LiteOS-M内核
 
 OpenHarmony LiteOS-M内核针对MCU类处理器，例如Arm Cortex-M、RISC-V32位的设备，面向AIoT领域构建的轻量级操作系统内核。此内核具有小体积、低功耗、高性能的特点。其代码结构简单，主要包括内核最小功能集、内核抽象层、可选组件以及工程目录等，分为硬件相关层以及硬件无关层，硬件相关层提供统一的HAL（Hardware Abstraction Layer）接口，提升硬件易适配性，满足AIoT类型丰富的硬件拓展。
 
-- #### 架构
+#### 3.2 LiteOS-M内核架构
 
 OpenHarmony LiteOS-M核内核架构如图2.1所示。
 ![图2.1  OpenHarmony LiteOS-M内核架构图](/lab/pictures/fig2_1.png "")
@@ -53,7 +53,7 @@ OpenHarmony LiteOS-M核内核架构如图2.1所示。
 官方版LiteOS-M内核：
 [https://gitee.com/openharmony/kernel_liteos_m/tree/master](https://gitee.com/openharmony/kernel_liteos_m/tree/master)
 
-- #### 目录结构
+#### 3.3 目录结构
 
 目录结构如下。
 /kernel/liteos_m
@@ -98,22 +98,21 @@ OpenHarmony LiteOS-M核内核架构如图2.1所示。
 ├── tools                # 内核工具
 ├── utils                # 通用公共目录
 **图2.2  /kernel/liteos_m目录结构**
-
-### 4.gcc
+### 4. gcc
 
 GCC（GNU Compiler Collection，GNU编译器套件）是由GNU开发的编程语言编译器。GNU编译器套件包括C、C++、 Objective-C、 Fortran、Java、Ada和Go等语言前端及这些语言的库（如libstdc++，libgcj等。）
 GCC支持多种计算机体系结构芯片，如x86、ARM和RISC-V等，并已被移植到其他多种硬件平台。
 本实验课程使用基于RISC-V架构的GCC。
 
-### 5.gdb
+### 5. gdb
 
 本实验使用gdb调试内核。GNU symbolic debugger，简称gdb调试器，是 Linux 平台下最常用的一款程序调试器。GDB 编译器通常以 gdb 命令的形式在终端（Shell）中使用，它有很多选项，具体可参考<http://c.biancheng.net/gdb/>。
 
 ## 五、实验操作
 
-### 1.下载内核源码
+### 1. 下载内核源码
 
-- #### 下载LiteOS-m源码
+#### 1.1 下载LiteOS-m源码
 
 在以下地址下载LiteOS-m代码：
 <https://gitee.com/riscv-mcu/kernel_liteos_m/repository/archive/dev_nuclei.zip>
@@ -126,7 +125,7 @@ third_party_bounds_checking_function-master.zip
 ![图2.3](/lab/pictures/fig2_3.png)
 **图2.3  bounds_checking_function目录结构**
 
-- #### 内核源码文件目录结构
+  #### 1.2 内核源码文件目录结构
 
 完成后内核源码文件目录，例如E:\nuclei\liteos_m，结构如图2.4所示。
 ![图2.4](/lab/pictures/fig2_4.png)
@@ -134,9 +133,9 @@ third_party_bounds_checking_function-master.zip
 
 以上1)~2)较为繁琐，可向指导教师索取已经能直接解压缩即可使用的压缩包liteos_m_glx.zip。
 
-### 2.安装工具链GCC
+### 2. 安装工具链GCC
 
-- #### 下载交叉编译工具链
+#### 2.1 下载交叉编译工具链
 
 (1)进入opt目录。
 cd /opt
@@ -149,7 +148,7 @@ sudo wget https://www.nucleisys.com/upload/files/toochain/gcc/nuclei_riscv_newli
 
 下载所得压缩包为nuclei_riscv_newlibc_prebuilt_linux64_2020.08.tar.bz2。
 
-- #### 解压缩
+#### 2.2 解压缩
 
 下载后在Ubuntu下解压至指定的目录，比如/opt目录：
 
@@ -169,7 +168,7 @@ ls
 sudo rm nuclei_riscv_newlibc_prebuilt_linux64_2020.08.tar.bz2
 ```
 
-- #### 配置环境变量
+#### 2.3 配置环境变量
 
 (1)编辑/etc/profile。
 
@@ -187,15 +186,15 @@ PATH=$PATH:/opt/gcc/bin/
 (3)保存退出。
 按键esc 退出编辑状态，输入：wq保存编辑内容。
 
-- #### 更新环境
+#### 2.4 更新环境
 
 ```shell
 source /etc/profile
 ```
 
-### 3.安装Qemu RISC-V
+### 3. 安装Qemu RISC-V
 
-- #### 下载Qemu RISC-V
+#### 3.1 下载Qemu RISC-V
 
 (1)进入opt目录。
 
@@ -211,7 +210,7 @@ sudo wget https://www.nucleisys.com/upload/files/toochain/qemu/nuclei-qemu-2022.
 
 下载所得压缩包为nuclei-qemu-2022.08-linux-x64.tar.gz。
 
-- #### 解压缩
+#### 3.2 解压缩
 
 下载后在Ubuntu下解压至指定的目录，比如/opt/目录。
 
@@ -231,9 +230,9 @@ ls
 sudo rm nuclei-qemu-2022.08-linux-x64.tar.gz
 ```
 
-### 4.编译运行内核
+### 4. 编译运行内核
 
-- #### 编译内核
+#### 4.1 编译内核
 
 Ubuntu中进入内核源码目录，例如：/mnt/e/nuclei/ liteos_m/targets/riscv_nuclei_gd32vf103_soc_gcc/GCC。
 
@@ -253,7 +252,7 @@ make all
 (3)Nuclei-rvstart-gd32vf103-soc.hex；
 (4)Nuclei-rvstar-gd32vf103-soc.bin。
 
-- #### QEMU中运行内核
+#### 4.2 QEMU中运行内核
 
 首先进入build目录：
 
@@ -271,21 +270,23 @@ cd build
 ![图2.5](/lab/pictures/fig2_5.png)
 **图2.5  内核在QEMU中运行**
 
-### 5.内核源码的修改
+### 5. 内核源码的修改
 
-- #### Visual Studio Code中修改内核源码
+#### 5.1 Visual Studio Code中修改内核源码
 
 在Windows中启动Visual Studio Code，打开liteos_m所在目录，例如E:\Nuclei\liteos_m，修改子目录targets/riscv_nuclei_gd32vf103_soc_gcc/Src/中的main.c文件，注释掉图2.6中的两行代码，保存文件。
 ![图2.6](/lab/pictures/fig2_6.png)
 **图2.6  main.c代码**
-2)重新编译运行内核源码
+
+#### 5.2 重新编译运行内核源码
+
 运行结果如图2.7所示。
 ![图2.7](\pictures/fig2_7.png)
 **图2.7  修改main()后的运行结果**
 
-### 6.gdb调试内核
+### 6. gdb调试内核
 
-- #### Qemu中启动内核
+#### 6.1 Qemu中启动内核
 
 在一个WSL窗口启动Ubuntu，在内核elf文件Nuclei-rvstar-gd32vf103-soc.elf所在目录输入：
 
@@ -293,7 +294,7 @@ cd build
 /opt/qemu/bin/qemu-system-riscv32 -M gd32vf103v_rvstar -kernel Nuclei-rvstar-gd32vf103-soc.elf -serial stdio -nodefaults -nographic -s -S
 ```
 
-- #### gdb中调试内核
+#### 6.2 gdb中调试内核
 
 在另外一个WSL窗口启动Ubuntu，在构建内核的目录（例如：/mnt/e/nuclei/liteos_m/targets/riscv_nuclei_gd32vf103_soc_gcc/GCC）输入：
 
