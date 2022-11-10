@@ -69,7 +69,347 @@ LiteOS-m中的互斥锁模块为用户提供创建/删除互斥锁、获取/释�
 (4)20Tick后ExampleSemTask2唤醒， 释放信号量后，ExampleSemTask1得到信号量被调度运行，最后释放信号量。
 (5)ExampleSemTask1执行完，40Tick后任务ExampleSem被唤醒，执行删除信号量。
 
-#### 1.1.2 源码分析
+#### 1.2 生产者和消费者模型
 
-生产者和消费者模型。
 根据实验原理，用信号量实现生产者和消费者模型。
+
+### 2. 源码分析
+
+#### 2.1 数据结构
+
+分析OpenHarmony信号量控制块数据结构及其成员的功能。
+信号量控制块数据结构如代码引用5.1所示。
+代码引用5.1  信号量控制块数据结构（los_sem.h）
+
+```c
+/**
+ * @ingroup los_sem
+ * Semaphore control structure.
+ */
+typedef struct {
+    UINT16 semStat;      /**< Semaphore state */
+    UINT16 semCount;     /**< Number of available semaphores */
+    UINT16 maxSemCount;  /**< Max number of available semaphores */
+    UINT16 semID;        /**< Semaphore control structure ID */
+    LOS_DL_LIST semList; /**< Queue of tasks that are waiting on a semaphore */
+} LosSemCB;
+```
+
+#### 2.2 宏
+
+分析OpenHarmony信号量以下相关宏的功能。
+信号量相关宏如代码引用5.2所示。
+代码引用5.2  信号量相关宏（los_sem.h）
+
+```c
+/**
+ * @ingroup los_sem
+ * Obtain the head node in a semaphore doubly linked list.
+ */
+#define GET_SEM_LIST(ptr) LOS_DL_LIST_ENTRY(ptr, LosSemCB, semList)
+
+extern LosSemCB *g_allSem;
+/**
+ * @ingroup los_sem
+ * Obtain a semaphore ID.
+ *
+ */
+#define GET_SEM(semid) (((LosSemCB *)g_allSem) + (semid))
+```
+
+#### 2.3 全局变量分析
+
+分析OpenHarmony信号量以下相关全局变量的功能。
+信号量相关全局变量如代码引用5.3所示。
+代码引用5.3  信号量相关全局变量（los_sem.c）
+
+```c
+LITE_OS_SEC_DATA_INIT LOS_DL_LIST g_unusedSemList;
+LITE_OS_SEC_BSS LosSemCB *g_allSem = NULL;
+```
+
+#### 2.4 函数
+
+分析OpenHarmony的信号量初始化、创建、申请、释放和PV操作函数相关功能。注释标有①、②、③等编号的行。
+
+##### 2.4.1 信号量初始化
+
+信号量初始化函数OsSemIni()为配置的N个信号量申请内存（N值可以由用户自行配置，通过LOSCFG_BASE_IPC_SEM_LIMIT宏实现），并把所有信号量初始化成未使用，加入到未使用链表中供系统使用。
+信号量初始化过程如代码引用5.4所示。
+代码引用5.4  信号量初始化函数（los_sem.c）
+
+```c
+/*****************************************************************************
+ Function     : OsSemInit
+ Description  : Initialize the Semaphore doubly linked list
+ Input        : None
+ Output       : None
+ Return       : LOS_OK on success, or error code on failure
+ *****************************************************************************/
+LITE_OS_SEC_TEXT_INIT UINT32 OsSemInit(VOID)
+{
+    LosSemCB *semNode = NULL;
+    UINT16 index;
+
+①　LOS_ListInit(&g_unusedSemList);
+
+    if (LOSCFG_BASE_IPC_SEM_LIMIT == 0) {
+        return LOS_ERRNO_SEM_MAXNUM_ZERO;
+    }
+
+②　g_allSem = (LosSemCB *)LOS_MemAlloc(m_aucSysMem0, (LOSCFG_BASE_IPC_SEM_LIMIT * sizeof(LosSemCB)));     
+    if (g_allSem == NULL) {
+        return LOS_ERRNO_SEM_NO_MEMORY;
+    }
+
+/** Connect all the semaphore CBs in a doubly linked list. */
+③　for (index = 0; index < LOSCFG_BASE_IPC_SEM_LIMIT; index++) {
+        semNode = ((LosSemCB *)g_allSem) + index;
+        semNode->semID = index;
+        semNode->semStat = OS_SEM_UNUSED;
+        LOS_ListTailInsert(&g_unusedSemList, &semNode->semList);
+    }
+    return LOS_OK;
+}
+```
+
+##### 2.4.2 信号量创建
+
+信号量创建函数OsSemCreate()从未使用的信号量链表中获取一个信号量，并设定初值。
+代码引用5.5 信号量创建（lossem.c）
+
+```c
+/*****************************************************************************
+ Function     : OsSemCreate
+ Description  : create the Semaphore
+ Input        : count      --- Semaphore count
+              : maxCount   --- Max semaphore count for check
+ Output       : semHandle  --- Index of semaphore
+ Return       : LOS_OK on success, or error code on failure
+ *****************************************************************************/
+LITE_OS_SEC_TEXT_INIT UINT32 OsSemCreate(UINT16 count, UINT16 maxCount, UINT32 *semHandle)
+{
+    UINT32 intSave;
+    LosSemCB *semCreated = NULL;
+    LOS_DL_LIST *unusedSem = NULL;
+    UINT32 errNo;
+    UINT32 errLine;
+
+    if (semHandle == NULL) {
+        return LOS_ERRNO_SEM_PTR_NULL;
+    }
+
+    if (count > maxCount) {
+        OS_GOTO_ERR_HANDLER(LOS_ERRNO_SEM_OVERFLOW);
+    }
+
+①　intSave = LOS_IntLock(); 
+
+    if (LOS_ListEmpty(&g_unusedSemList)) {
+        LOS_IntRestore(intSave);
+        OS_GOTO_ERR_HANDLER(LOS_ERRNO_SEM_ALL_BUSY);
+    }
+
+②　unusedSem = LOS_DL_LIST_FIRST(&(g_unusedSemList));
+③　LOS_ListDelete(unusedSem); 
+④　semCreated = (GET_SEM_LIST(unusedSem)); 
+    semCreated->semCount = count;
+    semCreated->semStat = OS_SEM_USED;
+    semCreated->maxSemCount = maxCount;
+⑤　LOS_ListInit(&semCreated->semList); 
+⑥　*semHandle = (UINT32)semCreated->semID; 
+⑦　LOS_IntRestore(intSave); 
+⑧　OsHookCall(LOS_HOOK_TYPE_SEM_CREATE, semCreated); 
+    return LOS_OK;
+
+ERR_HANDLER:
+    OS_RETURN_ERROR_P2(errLine, errNo);
+}
+
+/*****************************************************************************
+ Function     : LOS_SemCreate
+ Description  : Create a semaphore
+ Input        : count--------- semaphore count
+ Output       : semHandle-----Index of semaphore
+ Return       : LOS_OK on success, or error code on failure
+ *****************************************************************************/
+LITE_OS_SEC_TEXT_INIT UINT32 LOS_SemCreate(UINT16 count, UINT32 *semHandle)
+{
+    return OsSemCreate(count, OS_SEM_COUNTING_MAX_COUNT, semHandle);
+}
+```
+
+##### 2.4.3 信号量释放
+
+信号量释放函数LOS_SemPost()，若没有任务等待该信号量，则直接将计数器加1返回。否则唤醒该信号量等待任务队列上的第一个任务。
+信号量释放函数如代码引用5.6所示。
+代码引用5.6  信号量释放函数（los_sem.c）
+
+```c
+/*****************************************************************************
+ Function     : LOS_SemPost
+ Description  : Specified semaphore V operation
+ Input        : semHandle--------- semaphore operation handle
+ Output       : None
+ Return       : LOS_OK on success or error code on failure
+ *****************************************************************************/
+LITE_OS_SEC_TEXT UINT32 LOS_SemPost(UINT32 semHandle)
+{
+    UINT32 intSave;
+    LosSemCB *semPosted = GET_SEM(semHandle);
+    LosTaskCB *resumedTask = NULL;
+
+    if (semHandle >= LOSCFG_BASE_IPC_SEM_LIMIT) {
+        return LOS_ERRNO_SEM_INVALID;
+    }
+
+①　intSave = LOS_IntLock(); 
+
+    if (semPosted->semStat == OS_SEM_UNUSED) {
+        LOS_IntRestore(intSave);
+        OS_RETURN_ERROR(LOS_ERRNO_SEM_INVALID);
+    }
+
+    if (semPosted->maxSemCount == semPosted->semCount) {
+        LOS_IntRestore(intSave);
+        OS_RETURN_ERROR(LOS_ERRNO_SEM_OVERFLOW);
+    }
+②　if (!LOS_ListEmpty(&semPosted->semList)) { 
+        resumedTask = OS_TCB_FROM_PENDLIST(LOS_DL_LIST_FIRST(&(semPosted->semList)));
+        resumedTask->taskSem = NULL;
+        OsSchedTaskWake(resumedTask);
+
+③　LOS_IntRestore(intSave); 
+        OsHookCall(LOS_HOOK_TYPE_SEM_POST, semPosted, resumedTask);
+        LOS_Schedule();
+④　} else { 
+        semPosted->semCount++;
+⑤　LOS_IntRestore(intSave); 
+        OsHookCall(LOS_HOOK_TYPE_SEM_POST, semPosted, resumedTask);
+    }
+
+    return LOS_OK;
+}
+```
+
+##### 2.4.4 信号量申请
+
+信号量申请函数LOS_SemPend()，若其计数器值大于0，则直接减1返回成功。否则任务阻塞，等待其它任务释放该信号量，等待的超时时间可设定。当任务被一个信号量阻塞时，将该任务挂到信号量等待任务队列的队尾。
+信号量申请函数如代码引用5.7所示。
+代码引用5.7  信号量申请函数（los_sem.c）
+
+```c
+/*****************************************************************************
+ Function     : LOS_SemPend
+ Description  : Specified semaphore P operation
+ Input        : semHandle --------- semaphore operation handle
+              : timeout   --------- waitting time
+ Output       : None
+ Return       : LOS_OK on success or error code on failure
+ *****************************************************************************/
+LITE_OS_SEC_TEXT UINT32 LOS_SemPend(UINT32 semHandle, UINT32 timeout)
+{
+    UINT32 intSave;
+    LosSemCB *semPended = NULL;
+    UINT32 retErr;
+    LosTaskCB *runningTask = NULL;
+
+    if (semHandle >= (UINT32)LOSCFG_BASE_IPC_SEM_LIMIT) {
+        OS_RETURN_ERROR(LOS_ERRNO_SEM_INVALID);
+    }
+
+    semPended = GET_SEM(semHandle);
+①　intSave = LOS_IntLock(); 
+
+    retErr = OsSemValidCheck(semPended);
+    if (retErr) {
+        goto ERROR_SEM_PEND;
+    }
+
+    runningTask = (LosTaskCB *)g_losTask.runTask;
+
+②　if (semPended->semCount > 0) {  
+        semPended->semCount--;
+③　LOS_IntRestore(intSave); /** 中断解锁 */
+
+/** 回调 */
+④　OsHookCall(LOS_HOOK_TYPE_SEM_PEND, semPended, runningTask, timeout);         return LOS_OK;
+    }
+
+    if (!timeout) {
+        retErr = LOS_ERRNO_SEM_UNAVAILABLE;
+        goto ERROR_SEM_PEND;
+    }
+
+⑤　/**  */
+⑥　runningTask->taskSem = (VOID *)semPended;
+⑦　OsSchedTaskWait(&semPended->semList, timeout); 
+⑧　LOS_IntRestore(intSave); 
+⑨　OsHookCall(LOS_HOOK_TYPE_SEM_PEND, semPended, runningTask, timeout);
+⑩　LOS_Schedule(); 
+
+⑪　intSave = LOS_IntLock(); 
+    if (runningTask->taskStatus & OS_TASK_STATUS_TIMEOUT) {
+        runningTask->taskStatus &= (~OS_TASK_STATUS_TIMEOUT);
+        retErr = LOS_ERRNO_SEM_TIMEOUT;
+        goto ERROR_SEM_PEND;
+    }
+
+⑫　LOS_IntRestore(intSave); 
+    return LOS_OK;
+
+ERROR_SEM_PEND:
+    LOS_IntRestore(intSave);
+    OS_RETURN_ERROR(retErr);
+}
+```
+
+##### 2.4.5 信号量删除
+
+信号量删除函数LOS_SemDelete()将正在使用的信号量置为未使用信号量，并挂回到未使用链表。
+信号量删除函数如代码引用5.8所示。
+代码引用5.8  信号量删除函数（los_sem.c）
+/*****************************************************************************
+ Function     : LOS_SemDelete
+ Description  : Delete a semaphore
+ Input        : semHandle--------- semaphore operation handle
+ Output       : None
+ Return       : LOS_OK on success or error code on failure
+ *****************************************************************************/
+LITE_OS_SEC_TEXT_INIT UINT32 LOS_SemDelete(UINT32 semHandle)
+{
+    UINT32 intSave;
+    LosSemCB *semDeleted = NULL;
+    UINT32 errNo;
+    UINT32 errLine;
+
+    if (semHandle >= (UINT32)LOSCFG_BASE_IPC_SEM_LIMIT) {
+        OS_GOTO_ERR_HANDLER(LOS_ERRNO_SEM_INVALID);
+    }
+
+    semDeleted = GET_SEM(semHandle);
+①　intSave = LOS_IntLock(); 
+    if (semDeleted->semStat == OS_SEM_UNUSED) {
+②　LOS_IntRestore(intSave); 
+        OS_GOTO_ERR_HANDLER(LOS_ERRNO_SEM_INVALID);
+    }
+
+    if (!LOS_ListEmpty(&semDeleted->semList)) {
+③　LOS_IntRestore(intSave);  
+        OS_GOTO_ERR_HANDLER(LOS_ERRNO_SEM_PENDED);
+    }
+
+    LOS_ListAdd(&g_unusedSemList, &semDeleted->semList);
+    semDeleted->semStat = OS_SEM_UNUSED;
+④　LOS_IntRestore(intSave); 
+
+    OsHookCall(LOS_HOOK_TYPE_SEM_DELETE, semDeleted);
+    return LOS_OK;
+ERR_HANDLER:
+    OS_RETURN_ERROR_P2(errLine, errNo);
+}
+
+### 3. 内核实现
+
+（选做）
+实现Peterson算法。

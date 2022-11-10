@@ -75,7 +75,7 @@ wsl --set-default-version 2
 ![图1.2](/lab/pictures/fig1_2.png "安装Ubuntu")
 **图1.2  安装Ubuntu**
 
-- #### 更换Ubuntu软件源
+#### 3.2 更换Ubuntu软件源
 
   安装vim编辑器：
 
@@ -101,7 +101,7 @@ sudo vim /etc/apt/sources.list
 :wq
 ```
 
-#### 3.2 更新ubuntu
+#### 3.3 更新ubuntu
 
 执行以下命令更新Ubuntu：
 
@@ -109,7 +109,7 @@ sudo vim /etc/apt/sources.list
 sudo apt-get update
 ```
 
-#### 3.3 安装make
+#### 3.4 安装make
 
 执行以下命令安装make工具：
 
@@ -118,7 +118,7 @@ sudo apt-get install make
 sudo apt-get install autoconf automake
 ```
 
-#### 3.4 安装必要工具
+#### 3.5 安装必要工具
 
 执行以下命令安装必要工具：
 
@@ -128,7 +128,7 @@ sudo apt-get install pkg-config
 sudo apt-get install zlib1g-dev libglib2.0-0 libglib2.0-dev libsdl1.2-dev 
 sudo apt-get install libpixman-1-dev libfdt-dev libtool librbd-dev libaio-dev flex bison
 ```
-#### 3.5 在ubuntu下将shell切换回bash
+#### 3.6 在ubuntu下将shell切换回bash
 
 执行以下命令：
 
@@ -138,7 +138,7 @@ sudo dpkg-reconfigure dash
 
 然后选择no。
 
-#### 3.6 工具git安装配置（可选）
+#### 3.7 工具git安装配置（可选）
 
 开源分布式版本控制系统git是程序员的重要工具，安装git：
 

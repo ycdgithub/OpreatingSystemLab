@@ -99,87 +99,16 @@ int main(void)
 
 ### 2. 源码分析
 
+#### 2.1 任务状态
+
 分析OpenHarmony的LiteOS-m内核的TCB数据结构、任务状态、全局变量及其导致状态转换的函数的源码，源码主要涉及los_task.h和los_task.c。
-LiteOS-m的任务状态定义如代码引用3.3所示。
-代码引用3.3  任务状态（los_task.h）
 
-```c
-/**
- * @ingroup los_task
- * Flag that indicates the task or task control block status.
- *
- * The task control block is unused.
- */
-#define OS_TASK_STATUS_UNUSED                       0x0001
+#### 2.1 数据结构
 
-/**
- * @ingroup los_task
- * Flag that indicates the task or task control block status.
- *
- * The task is suspended.
- */
-#define OS_TASK_STATUS_SUSPEND                      0x0002
-
-/**
- * @ingroup los_task
- * Flag that indicates the task or task control block status.
- *
- * The task is ready.
- */
-#define OS_TASK_STATUS_READY                        0x0004
-
-/**
- * @ingroup los_task
- * Flag that indicates the task or task control block status.
- *
- * The task is blocked.
- */
-#define OS_TASK_STATUS_PEND                         0x0008
-
-/**
- * @ingroup los_task
- * Flag that indicates the task or task control block status.
- *
- * The task is running.
- */
-#define OS_TASK_STATUS_RUNNING                      0x0010
-
-/**
- * @ingroup los_task
- * Flag that indicates the task or task control block status.
- *
- * The task is delayed.
- */
-#define OS_TASK_STATUS_DELAY                        0x0020
-
-/**
- * @ingroup los_task
- * Flag that indicates the task or task control block status.
- *
- * The time for waiting for an event to occur expires.
- */
-#define OS_TASK_STATUS_TIMEOUT                      0x0040
-
-/**
- * @ingroup los_task
- * Flag that indicates the task or task control block status.
- *
- * The task is blocked on a time.
- */
-#define OS_TASK_STATUS_PEND_TIME                    0x0080
-
-/**
- * @ingroup los_task
- * Flag that indicates the task or task control block status.
- *
- * The task exits and waits for the parent thread to reclaim the resource.
- */
-#define OS_TASK_STATUS_EXIT                         0x0100
-```
-
-- 数据结构
 分析任务初始化参数结构体TSK_INIT_PARAM_S和任务控制块TCB结构体数据结构的作用及其每个成员的意义。
-- 任务状态
+
+#### 2.2 任务状态
+
 分析LiteOS-m每个任务状态的意义，给出每个状态转换的条件及其转换后的状态。
 LiteOS-m的任务状态定义如代码引用3.3所示。
 代码引用3.3  任务状态（los_task.h）
@@ -258,7 +187,8 @@ LiteOS-m的任务状态定义如代码引用3.3所示。
 #define OS_TASK_STATUS_EXIT                         0x0100
 ```
 
-- 全局变量
+#### 2.3  全局变量
+
 LiteOS-m的任务全局变量定义如代码引用3.4所示。说明全局变量的作用及引用这些变量的主要相关函数。
 代码引用3.4  任务相关全局变量（los_task.c）
 
@@ -274,7 +204,8 @@ LITE_OS_SEC_DATA_INIT LOS_DL_LIST                    g_taskRecyleList;
 LITE_OS_SEC_BSS  BOOL                                 g_taskScheduled = FALSE;
 ```
 
-- 函数
+#### 2.4 函数
+
 分析以下函数功能，对于加*号的函数，详细分析函数具体功能、主要过程及其对任务状态的改变。注释标有①、②、③等编号的行。
 
 | 序号 | 函数名 | 功能 |
@@ -293,7 +224,8 @@ LITE_OS_SEC_BSS  BOOL                                 g_taskSch
 |12| LOS_TaskLock ||
 |13| LOS_TaskUnlock ||
 
-(1)任务初始化函数OsTaskInit()。
+##### 2.4.1 任务初始化函数OsTaskInit()
+
 函数OsTaskInit()的实现如代码引用3.5所示。
 代码引用3.5  函数OsTaskInit()的实现（los_task.c）
 
@@ -343,7 +275,8 @@ LITE_OS_SEC_TEXT_INIT UINT32 OsTaskInit(VOID)
 }
 ```
 
-(2)函数OsNewTaskInit()。
+##### 2.4.2 函数OsNewTaskInit()
+
 函数OsNewTaskInit()的实现如代码引用3.6所示。
 代码引用3.6  函数OsNewTaskInit()的实现（los_task.c）
 
@@ -377,7 +310,8 @@ LITE_OS_SEC_TEXT_INIT UINT32 OsNewTaskInit(LosTaskCB *taskCB, TSK_INIT_PARAM_S *
 }
 ```
 
-(3)函数LOS_TaskCreate Only()。
+##### 2.4.3 函数LOS_TaskCreate Only()
+
 函数LOS_TaskCreate Only()的实现如代码引用3.7所示。
 代码引用3.7  函数LOS_TaskCreate Only()的实现（los_task.c）
 
@@ -458,7 +392,8 @@ LOS_ERREND:
 }
 ```
 
-(4)LOS_TaskResume ()。
+##### 2.4.4 LOS_TaskResume ()
+
 函数LOS_TaskResume ()的实现如代码引用3.8所示。
 代码引用3.8  函数LOS_TaskResume ()的实现（los_task.c）
 
@@ -519,7 +454,8 @@ LOS_ERREND:
 }
 ```
 
-(5)函数LOS_TaskSuspend ()。
+##### 2.4.5 函数LOS_TaskSuspend ()
+
 函数LOS_TaskSuspend ()的实现如代码引用3.9所示。
 代码引用3.9  函数LOS_TaskSuspend ()的实现（los_task.c）
 
@@ -588,7 +524,8 @@ LOS_ERREND:
 }
 ```
 
-(6)函数LOS_TaskDelete ()。
+##### 2.4.6 函数LOS_TaskDelete ()
+
 函数LOS_TaskDelete ()的实现如代码引用3.10所示。
 代码引用3.10  函数LOS_TaskDelete ()的实现（los_task.c）
 
@@ -659,7 +596,8 @@ LITE_OS_SEC_TEXT_INIT UINT32 LOS_TaskDelete(UINT32 taskID)
 }
 ```
 
-(7)函数LOS_TaskYield ()。
+##### 2.4.7 函数LOS_TaskYield ()
+
 函数LOS_TaskYield ()的实现如代码引用3.11所示。
 代码引用3.11  函数LOS_TaskYield ()的实现（los_task.c）
 

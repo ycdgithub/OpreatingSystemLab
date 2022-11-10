@@ -201,7 +201,7 @@ STATIC LOS_DL_LIST g_priQueueList[OS_PRIORITY_QUEUE_NUM];
 STATIC UINT32 g_queueBitmap;
 ```
 
-3)函数
+#### 2.3 函数
 分析表4.2中的函数功能，对于加*号的函数，详细分析函数具体功能、主要过程及其对任务状态的改变。注释标有①、②、③等编号的行。
 表4.3  任务管理主要函数及其功能
 |序号| 函数名| 功能|
@@ -222,7 +222,7 @@ STATIC UINT32 g_queueBitmap;
 |*14|LOS_SchedTickHandler||
 |15|LOS_Schedule||
 
-#### 2.3 函数OsSchedTaskDeQueue()
+##### 2.3.1 函数OsSchedTaskDeQueue()
 
 函数OsSchedTaskDeQueue()的实现如代码引用4.9所示。
 代码引用 4.9  函数OsSchedTaskDeQueue()的实现（los_sched.c）
@@ -241,7 +241,7 @@ VOID OsSchedTaskDeQueue(LosTaskCB *taskCB)
 }
 ```
 
-#### 2.4 函数OsSchedTaskEnQueue()
+##### 2.3.2 函数OsSchedTaskEnQueue()
 
 函数OsSchedTaskEnQueue()的实现如代码引用4.9所示。
 代码引用 4.9  函数OsSchedTaskDeQueue()的实现（los_sched.c）
@@ -269,7 +269,7 @@ VOID OsSchedTaskEnQueue(LosTaskCB *taskCB)
 }
 ```
 
-#### 2.5 函数OsSchedTaskWait()
+##### 2.3.3 函数OsSchedTaskWait()
 
 函数OsSchedTaskEnQueue()的实现如代码引用4.10所示。
 代码引用 4.10  函数OsSchedTaskWait()的实现（los_sched.c）
@@ -287,7 +287,7 @@ VOID OsSchedTaskWait(LOS_DL_LIST *list, UINT32 ticks)
 }
 ```
 
-#### 2.6 函数OsSchedTaskWake()
+##### 2.3.4 函数OsSchedTaskWake()
 
 函数OsSchedTaskEnQueue()的实现如代码引用4.11所示。
 代码引用 4.11  函数OsSchedTaskEnQueue()的实现（los_sched.c）
@@ -310,7 +310,7 @@ VOID OsSchedTaskWake(LosTaskCB *resumedTask)
 }
 ```
 
-#### 2.7 函数OsSchedTaskExit()
+##### 2.3.5 函数OsSchedTaskExit()
 
 函数OsSchedTaskExit()的实现如代码引用4.11所示。
 代码引用 4.11  函数OsSchedTaskExit()的实现（los_sched.c）
@@ -333,7 +333,7 @@ VOID OsSchedTaskExit(LosTaskCB *taskCB)
 }
 ```
 
-#### 2.8 函数OsSchedInit()
+##### 2.3.6 函数OsSchedInit()
 
 函数OsSchedInit()的实现如代码引用4.12所示。
 代码引用 4.12  函数OsSchedInit()的实现（los_sched.c）
@@ -361,7 +361,7 @@ UINT16 pri;
 }
 ```
 
-#### 2.9 函数OsSchedStart()
+##### 2.3.7 函数OsSchedStart()
 
 函数OsSchedStart()的实现如代码引用4.13所示。
 代码引用 4.13  函数OsSchedStart()的实现（los_sched.c）
@@ -391,7 +391,7 @@ VOID OsSchedStart(VOID)
 }
 ```
 
-#### 2.10 函数OsSchedTaskSwitch()
+##### 2.3.8 函数OsSchedTaskSwitch()
 
 函数OsSchedTaskSwitch()的实现如代码引用4.14所示。
 代码引用 4.14  函数OsSchedTaskSwitch()的实现（los_sched.c）
@@ -444,7 +444,7 @@ BOOL OsSchedTaskSwitch(VOID)
 }
 ```
 
-#### 2.11 函数OsGetTopTask()
+##### 2.3.9 函数OsGetTopTask()
 
 函数OsGetTopTask()的实现如代码引用4.14所示。
 代码引用 4.14  函数OsGetTopTask()的实现（los_sched.c）

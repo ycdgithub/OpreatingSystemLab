@@ -7,7 +7,7 @@
 1. 理解操作系统的内存管理机制；
 2. 掌握OpenHarmony的内存管理机制；
 
-## 3. 实现内存的分配
+3. 实现内存的分配
 
 ## 二、实验环境
 
@@ -25,7 +25,7 @@
 内存管理模块通过对内存的释放、申请操作来管理用户和内核对内存的使用。
 LiteOS-m将内核与内存管理分开实现，操作系统内核仅规定了必要的内存管理函数原型，LiteOS-m提供了多种内存分配算法（分配策略），但上层接口统一。内存管理分为静态内存管理和动态内存管理。
 
-### 2.Buddy伙伴系统
+### 2. Buddy伙伴系统
 
 伙伴系统是内核中用来管理物理内存的一种算法，伙伴系统把系统中要管理的物理内存按照页面个数分为不同的组，确切来说是分成了11个组，分别对应11种大小不同的连续内存块，每组中的内存块大小都相等，为2的幂次个物理页。那么系统中就存在2 ^ 0~2 ^ 10这么11种大小不同的内存块，对应内存块大小为4KB ~ 4KB * 2^10。也就是4KB ~ 4M。内核用11个链表来管理11种大小不同的内存块。
 
@@ -224,268 +224,55 @@ VOID*newPtr = NULL;
 |申请一块静态内存| LOS_MemboxAlloc| 申请一块静态内存块|
 |释放内存| LOS_MemboxFree| 释放一个静态内存块|
 |分析静态内存池状态| LOS_MemboxStatisticsGet |获取静态内存池的统计信息|
-
-## 五、实验思考与练习题
-
+## 五、实验练习与思考题
 ### 1. API编程
 
-创建一个任务，从动态内存池中申请一个内存块，在该内存块存储一个字符串，输出该内存块中的数据。
+创建一个任务，从动态内存池中申请一个内存块，在该内存块存储一个整数，输出该内存块中的数据。
 
 ### 2. 源码分析
 
 #### 2.1 数据结构
 
-分析OpenHarmony的risc32平台中断管理c程序( kernel\arch\risc-v\riscv32\gcc\los_interrupt.c)中断向量表g_hwiForm的0~12号的中断功能，填入表7.1。
-中断向量表g_hwiForm的定义如代码引用7.1所示。
-代码引用7.1  中断向量表g_hwiForm的定义
+分析OpenHarmony内存管理相关数据结构及其成员的功能。
+(1)struct OsMemPoolHead。
+OsMemPoolHead定义如代码引用5.1所示。
+代码引用5.1  OsMemPoolHead定义（los_memory.c）
 
-```c（kernel\arch\risc-v\riscv32\gcc\los_interrupt.c）
-LITE_OS_SEC_DATA_INIT HWI_HANDLE_FORM_S g_hwiForm[OS_HWI_MAX_NUM] = {
-    { .pfnHook = NULL, .uwParam = 0 }, // 0 User software interrupt handler
-    { .pfnHook = NULL, .uwParam = 0 }, // 1 Supervisor software interrupt handler
-    { .pfnHook = NULL, .uwParam = 0 }, // 2 Reserved
-    { .pfnHook = HalHwiDefaultHandler, .uwParam = 0 }, // 3 Machine software interrupt handler
-    { .pfnHook = NULL, .uwParam = 0 }, // 4 User timer interrupt handler
-    { .pfnHook = NULL, .uwParam = 0 }, // 5 Supervisor timer interrupt handler
-    { .pfnHook = NULL, .uwParam = 0 }, // 6  Reserved
-    { .pfnHook = HalHwiDefaultHandler, .uwParam = 0 }, // 7 Machine timer interrupt handler
-    { .pfnHook = NULL, .uwParam = 0 }, // 8  User external interrupt handler
-    { .pfnHook = NULL, .uwParam = 0 }, // 9 Supervisor external interrupt handler
-    { .pfnHook = NULL, .uwParam = 0 }, // 10 Reserved
-    { .pfnHook = HalHwiDefaultHandler, .uwParam = 0 }, // 11 Machine external interrupt handler
-    { .pfnHook = HalHwiDefaultHandler, .uwParam = 0 }, // 12 NMI handler
-    { .pfnHook = NULL, .uwParam = 0 }, // 13 Reserved
-    { .pfnHook = NULL, .uwParam = 0 }, // 14 Reserved
-    { .pfnHook = NULL, .uwParam = 0 }, // 15 Reserved
-    { .pfnHook = NULL, .uwParam = 0 }, // 16 Reserved
-    { .pfnHook = NULL, .uwParam = 0 }, // 17 Reserved
-    { .pfnHook = NULL, .uwParam = 0 }, // 18 Reserved
-    { .pfnHook = NULL, .uwParam = 0 }, // 19 Reserved
-    { .pfnHook = NULL, .uwParam = 0 }, // 20 Reserved
-    { .pfnHook = NULL, .uwParam = 0 }, // 21 Reserved
-    { .pfnHook = NULL, .uwParam = 0 }, // 22 Reserved
-    { .pfnHook = NULL, .uwParam = 0 }, // 23 Reserved
-    { .pfnHook = NULL, .uwParam = 0 }, // 24 Reserved
-    { .pfnHook = NULL, .uwParam = 0 }, // 25 Reserved
+```c
+struct OsMemPoolHead {
+    struct OsMemPoolInfo info;
+    UINT32 freeListBitmap[OS_MEM_BITMAP_WORDS];
+    struct OsMemFreeNodeHead *freeList[OS_MEM_FREE_LIST_COUNT];
+#if (LOSCFG_MEM_MUL_POOL == 1)
+    VOID *nextPool;
+#endif
 };
 ```
 
-表7.1  0~12号中断的功能
-|中断号|英文说明|功能|
-|----|----|----|
-|0|||
-|1|||  
-|2|||  
-|3|||  
-|4|||  
-|5|||  
-|6|||  
-|7|||  
-|8|||  
-|9|||  
-|10|||  
-|11|||  
-|12|||  
-
-#### 2.2 函数
-
-分析OpenHarmony的risc32平台中断管理相关源码，包括函数HalHwiInit()、函数HalHwiInterruptDone()、函数HalHwiCreate()和函数HalHwiDelete()。
-
-##### 2.2.1 函数HalHwiInit()
-
-在LOS内核初始化函数LOS_KernelInit()（kernel\src\los_init.c）中调用函数HalArchInit()进行平台相关中断初始化。函数HalArchInit()定义在kernel\arch\risc-v\nuclei\gcc\los_context.c中实现，然后进一步调用HalHwiInit()函数完成中断向量初始化。
-中断初始化HalHwiInit()将中断向量表的OS_RISCV_SYS_VECTOR_CNT以后项的中断处理含函数初始化为缺省中断处理函数HalHwiDefaultHandler()。
-中断初始化HalHwiInit()如代码引用7.2所示。
-代码引用7.2  中断初始化HalHwiInit()（los_interrupt.c）
+(2)OsMemNodeHead。
+OsMemNodeHead定义如代码引用5.2所示。
+代码引用5.2  OsMemNodeHead的定义（los_memory.c）
 
 ```c
-LITE_OS_SEC_TEXT_INIT VOID HalHwiInit(VOID)
-{
-    UINT32 index;
-    for (index = OS_RISCV_SYS_VECTOR_CNT; index < OS_HWI_MAX_NUM; index++) {
-①　g_hwiForm[index].pfnHook = HalHwiDefaultHandler;
-②　g_hwiForm[index].uwParam = 0;
-    }
-}
-```
-
-##### 2.2.2 函数HalHwiInterruptDone()
-
-中断完成函数HalHwiInterruptDone()调用中断号hwiNum的中断处理函数完成中断处理。中断完成函数HalHwiInterruptDone()被汇编代码los_exc.S kernel\arch\risc-v\riscv32\gcc\los_exc.S的陷阱向量函数HalTrapVector()调用。
-陷阱向量函数HalTrapVector()的实现如代码引用7.3所示。
-代码引用7.3  陷阱向量函数HalTrapVector()的实现
-（los_exc.S kernel\arch\risc-v\riscv32\gcc\los_exc.S）
-
-```asm
-.section .interrupt.HalTrapVector.text
-.extern HalTrapEntry
-.extern HalIrqEndCheckNeedSched
-.global HalTrapVector
-.equ TRAP_INTERRUPT_MODE_MASK, 0x80000000
-.align 4
-HalTrapVector:
-    PUSH_CALLER_REG
-    csrr  a0, mcause
-    li    a1, TRAP_INTERRUPT_MODE_MASK
-    li    a2, MCAUSE_INT_ID_MASK
-    and   a1, a0, a1
-    and   a0, a2, a0
-    beqz  a1, HalTrapEntry
-    csrw  mscratch, sp
-    la    sp, __start_and_irq_stack_top
-    jal   HalHwiInterruptDone
-    csrr  sp, mscratch
-    call  HalIrqEndCheckNeedSched
-
-    POP_CALLER_REG
-    mret
-```
-
-陷阱向量函数HalTrapVector()调用陷阱入口函数HalTrapEntry()对陷阱入口进行统一处理。再调用中断完成函数HalHwiInterruptDone()调用中断号hwiNum的中断处理函数完成中断处理。再调用 (kernel\arch\risc-v\riscv32\gcc\los_context.c的HalIrqEndCheckNeedSched()函数进行调度。
-陷阱入口函数HalTrapEntry()的实现如代码引用7.4所示。
-代码引用7.4  陷阱入口函数HalTrapEntry()的实现
-（los_exc.S kernel\arch\risc-v\riscv32\gcc\los_exc.S）
-
-```asm
-.section .interrupt.text
-.extern HalExcEntry
-.extern g_excInfo
-.global HalTrapEntry
-.align 4
-HalTrapEntry:
-    PUSH_CALLEE_REG
-    addi  sp, sp, -(4 * REGBYTES)
-    sw    a0, 0 * REGBYTES(sp)
-    csrr  t0, mtval
-    sw    t0, 1 * REGBYTES(sp)
-    csrr  t0, medeleg
-    sw    t0, 2 * REGBYTES(sp)
-    sw    gp, 3 * REGBYTES(sp)
-    mv    a0, sp
-    csrw  mscratch, sp
-    la    t0, g_excInfo
-    lh    t1, 0(t0)
-    bnez  t1, 1f
-    la    sp, __except_stack_top
-1:
-    addi  t1, t1, 0x1
-    sh    t1, 0(t0)
-    call  HalExcEntry
-    la    t0, g_excInfo
-    sh    zero, 0(t0)
-    csrr  sp, mscratch
-    addi  sp, sp, 4 * REGBYTES
-    lw    t0, 16 * REGBYTES(sp)
-    csrw  mstatus, t0
-    lw    t0, 17 * REGBYTES(sp)
-    csrw  mepc, t0
-    POP_ALL_REG
-    mret
-```
-
-中断完成函数HalHwiInterruptDone()如代码引用7.5所示。
-代码引用7.6  中断完成函数HalHwiInterruptDone()（los_interrupt.c）
-
-```c
-typedef VOID (*HwiProcFunc)(VOID *arg);
-__attribute__((section(".interrupt.text"))) VOID HalHwiInterruptDone(HWI_HANDLE_T hwiNum)
-{
-①　g_intCount++;  
-
-    OsHookCall(LOS_HOOK_TYPE_ISR_ENTER, hwiNum);
-
-②　HWI_HANDLE_FORM_S *hwiForm = &g_hwiForm[hwiNum]; 
-③　HwiProcFunc func = (HwiProcFunc)(hwiForm->pfnHook); 
-④　func(hwiForm->uwParam);       
-
-⑤　++g_hwiFormCnt[hwiNum]; 
-
-⑥　OsHookCall(LOS_HOOK_TYPE_ISR_EXIT, hwiNum); 
-
-⑦　g_intCount--;
-}
-```
-
-##### 2.2.3 函数HalHwiCreate()
-
-中断创建函数HalHwiCreate()在中断向量表中注册中断号hwiNum的中断处理函数。
-中断创建函数HalHwiCreate()如代码引用7.5所示。
-代码引用7.6  中断创建函数HalHwiCreate()（los_interrupt.c）
-
-```c
-/*****************************************************************************
- Function    : HalHwiCreate
- Description : create hardware interrupt
- Input       : hwiNum     --- hwi num to create
-               hwiPrio    --- priority of the hwi
-               hwiMode    --- hwi interrupt mode
-               hwiHandler --- hwi handler
-               irqParam   --- param of the hwi handler
- Output      : None
- Return      : LOS_OK on success or error code on failure
- *****************************************************************************/
-①　LITE_OS_SEC_TEXT UINT32 HalHwiCreate(HWI_HANDLE_T hwiNum, 
-②　                                      HWI_PRIOR_T hwiPrio, 
-③　                                      HWI_MODE_T hwiMode,  
-④　                                      HWI_PROC_FUNC hwiHandler,
-⑤　                                      HWI_ARG_T irqParam) 
-{
-    UINT32 intSave;
-
-    if (hwiHandler == NULL) {
-        return OS_ERRNO_HWI_PROC_FUNC_NULL;
-    }
-    if (hwiNum >= OS_HWI_MAX_NUM) {
-        return OS_ERRNO_HWI_NUM_INVALID;
-    }
-    if (g_hwiForm[hwiNum].pfnHook == NULL) {
-        return OS_ERRNO_HWI_NUM_INVALID;
-    } else if (g_hwiForm[hwiNum].pfnHook != HalHwiDefaultHandler) {
-        return OS_ERRNO_HWI_NUM_INVALID;
-    }
-    if ((hwiPrio < OS_HWI_PRIO_LOWEST) || (hwiPrio > OS_HWI_PRIO_HIGHEST)) {
-        return OS_ERRNO_HWI_PRIO_INVALID;
-    }
-
-⑥　intSave = LOS_IntLock();      
-⑦　g_hwiForm[hwiNum].pfnHook = hwiHandler;  
-⑧　g_hwiForm[hwiNum].uwParam = (VOID *)irqParam; 
-
-⑨　if (hwiNum >= OS_RISCV_SYS_VECTOR_CNT) {  
-HalSetLocalInterPri(hwiNum, hwiPrio);
-}
-
-⑩　LOS_IntRestore(intSave);       
-
-    return LOS_OK;
-}
-```
-
-##### 2.2.4 函数HalHwiDelete()
-
-中断删除函数HalHwiDelete()恢复中断向量表中中断号为hwiNum的中断处理函数为缺省中断处理函数HalHwiDefaultHandler()。
-中断删除函数HalHwiDelete()如代码引用7.6所示。
-代码引用7.6  中断删除函数HalHwiDelete()（los_interrupt.c）
-
-```c
-/*****************************************************************************
- Function    : HalHwiDelete
- Description : Delete hardware interrupt
- Input       : hwiNum   --- hwi num to delete
- Return      : LOS_OK on success or error code on failure
- *****************************************************************************/
-LITE_OS_SEC_TEXT UINT32 HalHwiDelete(HWI_HANDLE_T hwiNum)
-{
-    UINT32 intSave;
-
-    if (hwiNum >= OS_HWI_MAX_NUM) {
-        return OS_ERRNO_HWI_NUM_INVALID;
-    }
-
-    intSave = LOS_IntLock();
-①　g_hwiForm[hwiNum].pfnHook = HalHwiDefaultHandler;/** 恢复缺省中断处理函数参数 */
-②　g_hwiForm[hwiNum].uwParam = 0;     /** 清除参数 */
-    LOS_IntRestore(intSave);
-    return LOS_OK;
-}
+struct OsMemNodeHead {
+#if (LOSCFG_BASE_MEM_NODE_INTEGRITY_CHECK == 1)
+    UINT32 magic;
+#endif
+#if (LOSCFG_MEM_LEAKCHECK == 1)
+    UINTPTR linkReg[LOSCFG_MEM_RECORD_LR_CNT];
+#endif
+    union {
+        struct OsMemNodeHead *prev; /* The prev is used for current node points to the previous node */
+        struct OsMemNodeHead *next; /* The next is used for sentinel node points to the expand node */
+    } ptr;
+#if (LOSCFG_TASK_MEM_USED == 1)
+    UINT32 taskID;
+    UINT32 sizeAndFlag;
+#elif (LOSCFG_MEM_FREE_BY_TASKID == 1)
+    UINT32 taskID : 6;
+    UINT32 sizeAndFlag : 26;
+#else
+    UINT32 sizeAndFlag;
+#endif
+};
 ```

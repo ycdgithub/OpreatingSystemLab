@@ -98,6 +98,7 @@ OpenHarmony LiteOS-M核内核架构如图2.1所示。
 ├── tools                # 内核工具
 ├── utils                # 通用公共目录
 **图2.2  /kernel/liteos_m目录结构**
+
 ### 4. gcc
 
 GCC（GNU Compiler Collection，GNU编译器套件）是由GNU开发的编程语言编译器。GNU编译器套件包括C、C++、 Objective-C、 Fortran、Java、Ada和Go等语言前端及这些语言的库（如libstdc++，libgcj等。）
@@ -125,7 +126,7 @@ third_party_bounds_checking_function-master.zip
 ![图2.3](/lab/pictures/fig2_3.png)
 **图2.3  bounds_checking_function目录结构**
 
-  #### 1.2 内核源码文件目录结构
+#### 1.2 内核源码文件目录结构
 
 完成后内核源码文件目录，例如E:\nuclei\liteos_m，结构如图2.4所示。
 ![图2.4](/lab/pictures/fig2_4.png)
@@ -170,20 +171,22 @@ sudo rm nuclei_riscv_newlibc_prebuilt_linux64_2020.08.tar.bz2
 
 #### 2.3 配置环境变量
 
-(1)编辑/etc/profile。
+##### 2.3.1 编辑/etc/profile
 
 ```shell
 sudo vim /etc/profile
 ```
 
-(2)修改/etc/profile。
+##### 2.3.2 修改/etc/profile
+
 按键i进入编辑状态，光标移动到文档最后，输入：
 
 ```shell
 PATH=$PATH:/opt/gcc/bin/
 ```
 
-(3)保存退出。
+##### 2.3.3 保存退出
+
 按键esc 退出编辑状态，输入：wq保存编辑内容。
 
 #### 2.4 更新环境
@@ -196,13 +199,13 @@ source /etc/profile
 
 #### 3.1 下载Qemu RISC-V
 
-(1)进入opt目录。
+##### 3.1.1 进入opt目录。
 
 ```shell
 cd /opt
 ```
 
-(2)下载。
+##### 3.1.2 下载。
 
 ```shell
 sudo wget https://www.nucleisys.com/upload/files/toochain/qemu/nuclei-qemu-2022.08-linux-x64.tar.gz
