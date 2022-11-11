@@ -46,6 +46,7 @@ OpenHarmony LiteOS-M内核针对MCU类处理器，例如Arm Cortex-M、RISC-V32�
 
 OpenHarmony LiteOS-M核内核架构如图2.1所示。
 ![图2.1  OpenHarmony LiteOS-M内核架构图](/lab/pictures/fig2_1.png "")
+
 **图2.1  OpenHarmony LiteOS-M内核架构图**
 
 内核Kernel的下边是最底层芯片的硬件架构适配，使用汇编代码适配各种芯片架构，比如 Cortex-M、RISC-V等等；Kernel左边是系统编译、调试所需要的基础工具；Kernel的上边是网络、文件系统等扩展组件。最上层是抽象层，提供了 CMSIS 和 POSIX 接口，用于提供对外的接口，这套接口的 API是固定的，但 API 的底层则是调用 LiteOS 的内核函数。
@@ -56,6 +57,7 @@ OpenHarmony LiteOS-M核内核架构如图2.1所示。
 #### 3.3 目录结构
 
 目录结构如下。
+```text
 /kernel/liteos_m
 ├── arch                 # 内核指令架构层目录
 │   ├── arm              # arm 架构代码
@@ -97,6 +99,8 @@ OpenHarmony LiteOS-M核内核架构如图2.1所示。
 ├── testsuites           # 内核测试用例
 ├── tools                # 内核工具
 ├── utils                # 通用公共目录
+```
+
 **图2.2  /kernel/liteos_m目录结构**
 
 ### 4. gcc

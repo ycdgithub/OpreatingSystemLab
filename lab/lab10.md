@@ -89,7 +89,6 @@ pause
 
 为了更直观地向中文用户介绍HUAWEI LiteOS Studio，本文档所用HUAWEI LiteOS Studio安装了中文语言包扩展vscode-language-pack-zh-hans。当前用户能够获取的HUAWEI LiteOS Studio默认不预置中文语言包，因此界面默认显示为英文。
 用户可以通过以管理员身份执行本站提供的扩展自动下载程序下载中文语言包扩展，默认下载到C:\Users\UserName\\.huawei-liteos-studio\extensions\extension-collections目录，可参考扩展安装完成安装。
-该脚本extension_download.bat内容如下：
 代码引用 10.2 中文语言包安装脚本（extension_download.bat）
 
 ```shell
@@ -139,7 +138,12 @@ trusted-host = repo.huaweicloud.com
 timeout = 120
 ```
 
-也可：CMD命令直接调出来命令执行窗口，执行下列命令，直接更换为，想换成其他源地址的，可以自行修改后面地址部分。pip config set global.index-url <https://repo.huaweicloud.com/repository/pypi/simple>
+也可用CMD命令直接调出来命令执行窗口，执行下列命令，想换成其他源地址的可修改后面地址部分。
+
+```c
+pip config set global.index-url <https://repo.huaweicloud.com/repository/pypi/simple>
+```
+
 华为：<https://repo.huaweicloud.com/repository/pypi/simple>
 清华：<https://pypi.tuna.tsinghua.edu.cn/simple>
 阿里云：<http://mirrors.aliyun.com/pypi/simple/>
@@ -159,23 +163,26 @@ pip install scons
 
 #### 2.5 工程准备
 
-##### 2.5.1解压缩HiHope_WiFi-IoT_Hi3861SPC021_LiteOS_SDK
+（1）解压缩HiHope_WiFi-IoT_Hi3861SPC021_LiteOS_SDK到目录SPC021。
 
-解压缩HiHope_WiFi-IoT_Hi3861SPC021_LiteOS_SDK到目录SPC021。
+（2）解压缩HiSpark-WiFi-IoT-RobotKit-master
 
-##### 2.5.2解压缩HiSpark-WiFi-IoT-RobotKit-master
+将下载好的RobertKit拷贝到SDK的对应目录中，覆盖相同的文件。
 
-将下载好的RobertKit拷贝到SDK的中的对应目录SPC025中，覆盖相同的文件。
+```shell
 \HiSpark-WiFi-IoT-RobotKit-master\app\demo\init\app_io_init.c
 \HiSpark-WiFi-IoT-RobotKit-master\app\demo\src\*.*
 \HiSpark-WiFi-IoT-RobotKit-master\platform\drivers\adc\hi_adc.c
 \HiSpark-WiFi-IoT-RobotKit-master\tools\menuconfig\*.*
+```
 
-打开工程：\SPC025
-工程目录
+（3）打开工程目录。
 
-#### 2.6 配置工程（快捷键F4）
+#### 2.6 配置工程
 
+快捷键F4修改。
+
+```text
 Board:  Hisilicon Hi3861v100 WIFIIoT LinxCore131
 Compile:  C:\Users\xxx\.huawei-liteos-studio\tools\hi3861\hcc_riscv32_win\bin\
 SConstruct Script: \HiHope_WiFi-IoT_Hi3861SPC021\SConstruct （或点击放大镜自动搜索）
@@ -184,11 +191,11 @@ Burn Files: \HiHope_WiFi-IoT_Hi3861SPC021\output\bin\Hi3861_demo_allinone.bin
 Serial Port
 Port:根据开发板连接的口选择
 Baud Rate : 921600
+```
+
 注：xxx表示用户名
 
-#### 2.7 编译
-
-常见错误对策
+#### 2.7 常见错误对策
 
 （1）编译过程中报错：undefined reference to `hi_pwm_init` 等几个 `hi_pwm_`开头的函数。
 
@@ -210,4 +217,4 @@ Baud Rate : 921600
 
 ### 1.API编程
 
-创建了两个任务，一个是写消息任务
+创建了两个任务，一个是写消息任务。
