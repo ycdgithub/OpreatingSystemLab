@@ -205,7 +205,7 @@ STATIC UINT32 g_queueBitmap;
 分析表4.2中的函数功能，对于加*号的函数，详细分析函数具体功能、主要过程及其对任务状态的改变。注释标有①、②、③等编号的行。
 表4.3  任务管理主要函数及其功能
 |序号| 函数名| 功能|
-|----| ----| ----|----|
+|----| ----| ----|
 |1| OsSchedUpdateExpireTime||
 |*2| OsSchedTaskDeQueue ||
 |*3| OsSchedTaskEnQueue ||
