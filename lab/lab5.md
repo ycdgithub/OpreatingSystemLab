@@ -63,11 +63,12 @@ LiteOS-m中的互斥锁模块为用户提供创建/删除互斥锁、获取/释�
 #### 1.1 信号量使用
 
 实现如下功能：
-(1)测试任务ExampleSem创建一个信号量，锁任务调度，创建两个任务ExampleSemTask1、ExampleSemTask2, ExampleSemTask2优先级高于ExampleSemTask1，两个任务中申请同一信号量，解锁任务调度后两任务阻塞，测试任务ExampleSem释放信号量。
-(2)ExampleSemTask2得到信号量，被调度，然后任务休眠20Tick，ExampleSemTask2延迟，ExampleSemTask1被唤醒。
-(3)ExampleSemTask1定时阻塞模式申请信号量，等待时间为10Tick，因信号量仍被ExampleSemTask2持有，ExampleSemTask1挂起，10Tick后仍未得到信号量，ExampleSemTask1被唤醒，试图以永久阻塞模式申请信号量，ExampleSemTask1挂起。
-(4)20Tick后ExampleSemTask2唤醒， 释放信号量后，ExampleSemTask1得到信号量被调度运行，最后释放信号量。
-(5)ExampleSemTask1执行完，40Tick后任务ExampleSem被唤醒，执行删除信号量。
+(1)测试任务Sem创建一个信号量，信号量初始值为1，锁任务调度，创建两个任务SemTask1、SemTask2, SemTask2优先级高SemTask1。
+
+(2)SemTask2申请信号量，成功后延时20Tick，然后释放信号量。
+
+(3)ExampleSemTask1申请信号量，成功后任务延时10Tick，然后释放信号量。
+
 
 #### 1.2 生产者和消费者模型
 
