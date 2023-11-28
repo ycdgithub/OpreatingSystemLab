@@ -63,7 +63,7 @@ LiteOS-m中的互斥锁模块为用户提供创建/删除互斥锁、获取/释�
 #### 1.1 信号量使用
 
 实现如下功能：
-(1)测试任务Sem创建一个信号量，信号量初始值为1，锁任务调度，创建两个任务SemTask1、SemTask2, SemTask2优先级高SemTask1。
+(1)创建一个信号量，信号量初始值为1，锁任务调度，创建两个任务SemTask1、SemTask2, SemTask2优先级高SemTask1。
 
 (2)SemTask1申请信号量，成功后延时20Tick，然后释放信号量。
 
