@@ -95,20 +95,6 @@ hexdump -C test.img
 
 注意：device必须指定index=1参数，在riscv32 virt中，挂载目录必须是以下4个目录之一：/system、/inner、/update、/user
 
-### 3. 在宿主机中挂载
-
-```shell
-sudo losetup /dev/loop0 fat.img
-sudo losetup -o 1048576 /dev/loop1 /dev/loop0
-sudo mount /dev/loop1 some_dir
-```
-
-### 4. 缷载
-
-```shell
-sudo umount some_dir
-sudo losetup -d /dev/loop1    
-```
 
 ## 六、实验练习与思考题
 
