@@ -120,12 +120,8 @@ GCC支持多种计算机体系结构芯片，如x86、ARM和RISC-V等，并已�
 #### 1.1 下载LiteOS-m源码
 
 在以下地址下载LiteOS-m代码：
-<https://gitee.com/riscv-mcu/kernel_liteos_m/repository/archive/dev_nuclei.zip>
-下载所得压缩包为kernel_liteos_m-dev_nuclei.zip，解压缩到内核源目录，例如e:\nuclei，为了方便使用，将目录kernel_liteos_m-nuclei-OpenHarmony-3.0-LTS改名为liteos_m，则内核工作目录为e:\nuclei\liteos_m。
-该文档缺少所需要的第三方组件bounds_checking_function，可下载后将bounds_checking_function目录放到liteos_m的third_party子目录下。下载地址：
-<https://github.com/openharmony/third_party_bounds_checking_function/archive/refs/heads/master.zip>
-下载所得压缩包为:
-third_party_bounds_checking_function-master.zip
+<https://gitee.com/kao-lianxiong/ohlab/repository/archive/master.zip>
+解压缩到内核源目录，例如e:\nuclei
 目录结构如图2.3所示。
 ![图2.3](/lab/pictures/fig2_3.png)
 **图2.3  bounds_checking_function目录结构**
