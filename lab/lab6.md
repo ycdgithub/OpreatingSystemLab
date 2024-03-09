@@ -279,4 +279,3 @@ struct OsMemNodeHead {
 ### 3. 内核实现
 
 #### 3.1 实现FirstFit分配策略。
-#### 3.2 实现Buddy内存管理。（选做）
