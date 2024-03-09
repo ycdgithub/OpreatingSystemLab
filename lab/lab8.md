@@ -1,4 +1,4 @@
-# 实验8   OpenHarmony文件
+# 实验8   OpenHarmony文件系统
 
 （建议2学时）
 
