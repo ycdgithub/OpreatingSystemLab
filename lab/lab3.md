@@ -99,7 +99,6 @@ int main(void)
 
 ### 2. 源码分析
 
-#### 2.1 任务状态
 
 分析OpenHarmony的LiteOS-m内核的TCB数据结构、任务状态、全局变量及其导致状态转换的函数的源码，源码主要涉及los_task.h和los_task.c。
 
