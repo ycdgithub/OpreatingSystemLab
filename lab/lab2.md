@@ -127,7 +127,7 @@ sudo vim /etc/profile
 
 ##### 2.3.2 修改/etc/profile
 
-按键i进入编辑状态，光标移动到文档最后，输入：
+按键i进入编辑状态，光标移动到文档最后，插入新行：
 
 ```shell
 PATH=$PATH:/opt/gcc/bin/
