@@ -187,6 +187,8 @@ sudo rm nuclei-qemu-2022.08-linux-x64.tar.gz
 
 Ubuntu中进入内核源码目录，例如：/mnt/e/nuclei/ liteos_m/targets/riscv_nuclei_gd32vf103_soc_gcc/GCC。
 
+请注意将路径替换为你实际使用的路径。
+
 ```shell
 cd /mnt/e/nuclei/liteos_m/targets/riscv_nuclei_gd32vf103_soc_gcc/GCC
 ```
