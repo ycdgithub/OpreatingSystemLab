@@ -76,7 +76,7 @@ GCC支持多种计算机体系结构芯片，如x86、ARM和RISC-V等，并已�
 
 #### 1.2 内核源码文件目录结构
 
-完成后内核源码文件目录，例如E:\nuclei\kernel_liteos_m，结构如图2.4所示。
+完成后内核源码文件目录，例如E:\nuclei\liteos_m，结构如图2.4所示。
 ![图2.2](/lab/pictures/fig2_4.png)
 **图2.2  LiteOS-m内核源文件目录结构**
 
