@@ -293,15 +293,15 @@ LITE_OS_SEC_TEXT_INIT UINT32 OsTaskInit(VOID)
 
 // Ignore the return code when matching CSEC rule 6.6(4).
 
-⑤　(VOID)memset_s((VOID *)(&g_losTask), sizeof(g_losTask), 0, sizeof(g_losTask));
+⑤   (VOID)memset_s((VOID *)(&g_losTask), sizeof(g_losTask), 0, sizeof(g_losTask));
 
-⑥　g_losTask.runTask = &g_taskCBArray[g_taskMaxNum];
+⑥   g_losTask.runTask = &g_taskCBArray[g_taskMaxNum];
     g_losTask.runTask->taskID = index;
     g_losTask.runTask->taskStatus = (OS_TASK_STATUS_UNUSED | OS_TASK_STATUS_RUNNING);
     g_losTask.runTask->priority = OS_TASK_PRIORITY_LOWEST + 1;
 
 
-⑦　g_idleTaskID = OS_INVALID;
+⑦   g_idleTaskID = OS_INVALID;
     return OsSchedInit();
 }
 ```
@@ -335,7 +335,7 @@ LITE_OS_SEC_TEXT_INIT UINT32 OsNewTaskInit(LosTaskCB *taskCB, TSK_INIT_PARAM_S *
 
     if (taskInitParam->uwResved & LOS_TASK_ATTR_JOINABLE) {
         taskCB->taskStatus |= OS_TASK_FLAG_JOINABLE;
-⑱　    LOS_ListInit(&taskCB->joinList);     
+⑱       LOS_ListInit(&taskCB->joinList);     
     }
     return LOS_OK;
 }
@@ -366,13 +366,13 @@ LITE_OS_SEC_TEXT_INIT UINT32 LOS_TaskCreateOnly(UINT32 *taskID, TSK_INIT_PARAM_S
     }
 
 
-①　retVal = OsTaskInitParamCheck(taskInitParam);
+①   retVal = OsTaskInitParamCheck(taskInitParam);
     if (retVal != LOS_OK) {
         return retVal;
     }
 
 
-②　OsRecyleFinishedTask();
+②   OsRecyleFinishedTask();
 
     intSave = LOS_IntLock();
     if (LOS_ListEmpty(&g_losFreeTask)) {
@@ -381,9 +381,9 @@ LITE_OS_SEC_TEXT_INIT UINT32 LOS_TaskCreateOnly(UINT32 *taskID, TSK_INIT_PARAM_S
     }
 
 
-③　taskCB = OS_TCB_FROM_PENDLIST(LOS_DL_LIST_FIRST(&g_losFreeTask));
+③   taskCB = OS_TCB_FROM_PENDLIST(LOS_DL_LIST_FIRST(&g_losFreeTask));
 
-④　LOS_ListDelete(LOS_DL_LIST_FIRST(&g_losFreeTask));
+④   LOS_ListDelete(LOS_DL_LIST_FIRST(&g_losFreeTask));
 
     LOS_IntRestore(intSave);
 
@@ -403,7 +403,7 @@ LITE_OS_SEC_TEXT_INIT UINT32 LOS_TaskCreateOnly(UINT32 *taskID, TSK_INIT_PARAM_S
     }
 
 
-⑤　retVal = OsNewTaskInit(taskCB, taskInitParam, topOfStack);
+⑤   retVal = OsNewTaskInit(taskCB, taskInitParam, topOfStack);
     if (retVal != LOS_OK) {
         return retVal;
     }
@@ -472,7 +472,7 @@ if (!(taskCB->taskStatus & OS_CHECK_TASK_BLOCK)) {
 ②　   OsSchedTaskEnQueue(taskCB); 
         if (g_taskScheduled) {
             LOS_IntRestore(intSave);
-③　        LOS_Schedule(); 
+③　         LOS_Schedule(); 
             return LOS_OK;
         }
     }
@@ -544,7 +544,7 @@ LITE_OS_SEC_TEXT_INIT UINT32 LOS_TaskSuspend(UINT32 taskID)
     OsHookCall(LOS_HOOK_TYPE_MOVEDTASKTOSUSPENDEDLIST, taskCB);
     if (taskID == g_losTask.runTask->taskID) {
         LOS_IntRestore(intSave);
-③　    LOS_Schedule(); 
+③　     LOS_Schedule(); 
         return LOS_OK;
     }
 
@@ -615,10 +615,10 @@ LITE_OS_SEC_TEXT_INIT UINT32 LOS_TaskDelete(UINT32 taskID)
 ①　if (taskCB->taskStatus & OS_TASK_STATUS_RUNNING) { 
 ②　    if (!(taskCB->taskStatus & OS_TASK_STATUS_EXIT)) { 
             taskCB->taskStatus = OS_TASK_STATUS_UNUSED;
-③　        OsRunningTaskDelete(taskID, taskCB);
+③　         OsRunningTaskDelete(taskID, taskCB);
         }
         LOS_IntRestore(intSave);
-④　    LOS_Schedule(); 
+④　     LOS_Schedule(); 
         return LOS_OK;
     }
 
@@ -649,10 +649,10 @@ LITE_OS_SEC_TEXT_MINOR UINT32 LOS_TaskYield(VOID)
     UINT32 intSave;
 
     intSave = LOS_IntLock();
-①　  OsSchedYield();
+①　 OsSchedYield();
 
     LOS_IntRestore(intSave);
-②　LOS_Schedule(); 
+②　 LOS_Schedule(); 
     return LOS_OK;
 }
 ```
