@@ -232,7 +232,7 @@ LITE_OS_SEC_BSS  UINT32                              g_idleTaskI
 LITE_OS_SEC_BSS  UINT32                              g_swtmrTaskID;
 LITE_OS_SEC_DATA_INIT LOS_DL_LIST                    g_losFreeTask;
 LITE_OS_SEC_DATA_INIT LOS_DL_LIST                    g_taskRecyleList;
-LITE_OS_SEC_BSS  BOOL                                 g_taskScheduled = FALSE;
+LITE_OS_SEC_BSS  BOOL                                g_taskScheduled = FALSE;
 ```
 
 #### 2.4 函数
