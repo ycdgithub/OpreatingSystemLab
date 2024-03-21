@@ -50,10 +50,11 @@ sudo mkfs.vfat -F 32 test.img
 
 #### 1.3 挂载test.img
 
-将test.img挂载在/mnt
+将test.img挂载在/mnt/t
 
 ```shell
-sudo mount test.img /mnt
+sudo mkdir /mnt/t
+sudo mount test.img /mnt/t
 ```
 
 #### 1.4 创建目录
