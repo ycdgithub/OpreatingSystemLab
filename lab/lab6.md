@@ -304,7 +304,7 @@ struct OsMemNodeHead {
 };
 ```
 
-(2)分析LiteOS-m如何用位图管理空闲内存。
+(3)分析LiteOS-m如何用位图管理空闲内存。
 
 #### 2.2 函数
 
