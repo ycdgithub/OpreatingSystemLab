@@ -303,6 +303,13 @@ struct OsMemNodeHead {
 #endif
 };
 ```
+#### 2.2 函数
+
+(1)分析LiteOS-m动态内存管理的主要数据结构OsMemPoolHead和OsMemNodeHead。
+(2)分析LiteOS-m如何用位图管理空闲内存。
+(3)分析OsMemPoolInit、OsMemAlloc、OsMemFree三个函数的实现过程。
+
+
 ### 3. 内核实现
 
 #### 3.1 实现FirstFit分配策略。
