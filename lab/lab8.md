@@ -72,7 +72,7 @@ sudo mkdir test1_1_1
 ```shell
 sudo touch hello.txt
 echo you are my friend! > hello.txt
-sudo cp hello.txt /mnt/test1/test1_1/test1_1_1/
+sudo cp hello.txt /mnt/t/test1/test1_1/test1_1_1/
 ```
 
 #### 1.6 hexdump查看文件系统
