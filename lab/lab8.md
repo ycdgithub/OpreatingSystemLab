@@ -92,6 +92,7 @@ sudo cp hello.txt /mnt/t/test1/test1_1/test1_1_1/
 执行完如上步骤后，通过hexdump查看文件系统内容。
 
 ```shell
+cd /tmp
 sudo umount /mnt/t
 hexdump -C test.img
 ```
