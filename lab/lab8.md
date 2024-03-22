@@ -70,6 +70,7 @@ sudo mount test.img /mnt/t
 #### 1.4 创建目录
 
 ```shell
+cd /mnt/t
 sudo mkdir test1 test2 test3
 cd test1
 sudo mkdir test1_1
