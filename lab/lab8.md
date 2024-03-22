@@ -99,12 +99,14 @@ hexdump -C test.img
 
 ### 2. 在虚拟机中挂载
 
+进入Nuclei-rvstar-gd32vf103-soc.elf所在目录，在qemu中挂载/mnt/test.img
+
 ```shell
 /opt/qemu/bin/qemu-system-riscv32 \
 -M gd32vf103v_rvstar \
 -kernel Nuclei-rvstar-gd32vf103-soc.elf \
 -serial stdio -nodefaults -nographic \
--drive if=none,file=test.img,format=raw,index=1
+-drive if=none,file=\tmp\test.img,format=raw,index=1
 ```
 
 注意：device必须指定index=1参数，在riscv32 virt中，挂载目录必须是以下4个目录之一：/system、/inner、/update、/user
