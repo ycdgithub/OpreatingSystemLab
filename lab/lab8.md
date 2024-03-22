@@ -62,9 +62,9 @@ sudo mount test.img /mnt/t
 ```shell
 sudo mkdir test1 test2 test3
 cd test1
-sudo mkdir test1-1
-cd test1-1/
-sudo mkdir test1-1-1
+sudo mkdir test1_1
+cd test1_1/
+sudo mkdir test1_1_1
 ```
 
 #### 1.5 创建hello.txt文件
@@ -72,7 +72,7 @@ sudo mkdir test1-1-1
 ```shell
 sudo touch hello.txt
 echo you are my friend! > hello.txt
-sudo cp hello.txt /mnt/test1/test1-1/test1-1-1/
+sudo cp hello.txt /mnt/test1/test1_1/test1_1_1/
 ```
 
 #### 1.6 hexdump查看文件系统
@@ -80,7 +80,7 @@ sudo cp hello.txt /mnt/test1/test1-1/test1-1-1/
 执行完如上步骤后，通过hexdump查看文件系统内容。
 
 ```shell
-sudo umount /mnt
+sudo umount /mnt/t
 hexdump -C test.img
 ```
 
