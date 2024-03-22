@@ -138,6 +138,7 @@ hexdump -C test.img
 ##### 2.1.1 文件操作结构体file_ops
 
 文件操作结构体file_ops的定义如代码引用8.1所示。
+
 代码引用8.1  文件操作结构体file_ops的定义（los_vfs.h）
 
 ```c
@@ -162,6 +163,7 @@ struct file_ops {
 ##### 2.1.2 文件系统结构体file_system
 
 文件系统结构体file_system的定义如代码引用8.2所示。
+
 代码引用8.2  文件系统结构体file_system的定义（los_vfs.h）
 
 ```c
@@ -192,6 +194,7 @@ void*m_data;             /*used by fs private data for this mount point (l
 ##### 2.1.4 文件结构体file
 
 文件结构体file的定义如代码引用8.4所示。
+
 代码引用8.4  文件结构体file的定义（los_vfs.h）
 
 ```c
@@ -209,6 +212,7 @@ struct mount_point*f_mp; /*can get private mount data here*/
 ##### 2.1.5 目录项结构体dirent
 
 目录项结构体dirent的定义如代码引用8.5所示。
+
 代码引用8.5  目录项结构体dirent的定义（los_vfs.h）
 
 ```c
@@ -222,6 +226,7 @@ struct dirent {
 ##### 2.1.6 目录结构体dir
 
 目录结构体dir的定义如代码引用8.6所示。
+
 代码引用8.6  目录结构体dir的定义（los_vfs.h）
 
 ```c
@@ -235,8 +240,9 @@ void*d_data;
 
 ##### 2.1.7 ramfs元素结构体ramfs_element
 
-ramfs元素结构体ramfs_element的定义如代码引用9.7所示。
-代码引用 9.7  挂载点结构体mount_point的定义（los_ramfs.h）
+ramfs元素结构体ramfs_element的定义如代码引用8.7所示。
+
+代码引用 8.7  挂载点结构体mount_point的定义（los_ramfs.h）
 
 ```c
 struct ramfs_element {
@@ -260,7 +266,8 @@ struct ramfs_element*child;
 ##### 2.1.8 ramfs挂载点结构体 ramfs_mount_point
 
 ramfs挂载点结构体ramfs_mount_point的定义如代码引用8.8所示。
-代码引用 9.8  ramfs挂载点结构体ramfs_mount_point的定义（los_ramfs.c）
+
+代码引用 8.8  ramfs挂载点结构体ramfs_mount_point的定义（los_ramfs.c）
 
 ```c
 struct ramfs_mount_point {
@@ -274,6 +281,7 @@ struct ramfs_mount_point {
 ##### 2.2.1 全局变量
 
 los_vfs.c的全局变量如代码引用8.9所示，分析其作用。
+
 代码引用 8.9  全局变量的定义（los_vfs.c）
 
 ```c
@@ -286,6 +294,7 @@ struct file_system*file_systems = NULL;
 ##### 2.2.2 静态变量
 
 los_ramfs的静态变量如代码引用8.10所示。分析其作用。
+
 代码引用 8.10  静态变量的定义（los_ramfs.c）
 
 ```c
@@ -316,6 +325,7 @@ static struct file_system ramfs_fs = {"ramfs", &ramfs_ops, NULL, 0};
 ##### 2.3.1 ramfs初始化函数ramfs_init()
 
 ramfs初始化函数ramfs_init()如代码引用8.11所示。
+
 代码引用 8.11  ramfs初始化函数ramfs_init()（los_ramfs.c）
 
 ```c
@@ -348,6 +358,7 @@ int ramfs_init(void)
 ##### 2.3.2 ramfs挂载函数ramfs_mount()
 
 ramfs挂载函数ramfs_mount()如代码引用8.12所示。
+
 代码引用 8.12  ramfs挂载函数ramfs_mount()（los_ramfs.c）
 
 ```c
@@ -401,6 +412,7 @@ struct ramfs_mount_point*rmp;
 ##### 2.3.3 ramfs新建目录函数ramfs_mkdir()
 
 ramfs新建目录函数ramfs_mkdir()如代码引用8.13所示。
+
 代码引用 8.13  ramfs新建目录函数ramfs_mkdir()（los_ramfs.c）
 
 ```c
@@ -459,6 +471,7 @@ if (*t != '\0') {
 ##### 2.3.4 ramfs打开文件函数ramfs_open()
 
 ramfs打开文件函数ramfs_open()如代码引用8.14所示。
+
 代码引用 8.14  ramfs打开文件函数ramfs_open()（los_ramfs.c）
 
 ```c
